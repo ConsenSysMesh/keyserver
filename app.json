@@ -1,0 +1,19 @@
+{
+  "name": "keyserver",
+  "description": "Lightwallet Keyserver",
+  "repository": "https://github.com/ajunge/keyserver",
+  "keywords": ["lightwallet", "ethereum", "vertx"],
+  "addons": [
+    "mongolab:shared-single-small"
+  ],
+  "buildpacks": [
+    {
+      "url": "https://github.com/ether-camp/heroku-buildpack-gradle-bower"
+    }
+  ],
+  "env": {
+    "GRADLE_TASK": {
+      "value": "shadowJar"
+    }
+  }
+}

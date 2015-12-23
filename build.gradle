@@ -42,19 +42,13 @@ repositories {
 }
 
 dependencies {
-    compile 'io.vertx:vertx-core:3.1.0'
-    compile 'io.vertx:vertx-unit:3.1.0'
-    compile 'io.vertx:vertx-web:3.1.0'
-    compile 'io.vertx:vertx-jdbc-client:3.1.0'
-    compile 'io.vertx:vertx-auth-jwt:3.1.0'
-    compile 'io.vertx:vertx-stomp:3.1.0'
-    compile 'io.vertx:vertx-mongo-client:3.0.0'
+    compile 'io.vertx:vertx-core:3.2.0'
+    compile 'io.vertx:vertx-unit:3.2.0'
+    compile 'io.vertx:vertx-web:3.2.0'
+    compile 'io.vertx:vertx-mongo-client:3.2.0'
     compile 'org.slf4j:slf4j-api:1.7.12'
     compile 'junit:junit:4.12'
     runtime 'ch.qos.logback:logback-classic:1.1.3'
-    runtime 'com.tapstream:rollbar-logback:0.1'
-    runtime 'com.papertrailapp:logback-syslog4j:1.0.0'
-    runtime 'org.logback-extensions:logback-ext-loggly:0.1.2'
 } 
 
 shadowJar {

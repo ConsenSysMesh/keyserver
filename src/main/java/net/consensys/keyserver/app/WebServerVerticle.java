@@ -41,6 +41,11 @@ public class WebServerVerticle extends AbstractVerticle {
 		
 		router.get("/status").handler(handle("app.status"));
 		
+		//API v0
+		router.get("/api/v0/keystore/:id").handler(handle("keystore.get"));
+		router.post("/api/v0/keystore/:id").handler(handle("keystore.post"));
+		router.put("/api/v0/keystore/:id").handler(handle("keystore.put"));
+		router.delete("/api/v0/keystore/:id").handler(handle("keystore.delete"));
 		
 		//Static
 		router.route("/*").handler(StaticHandler.create());
@@ -55,21 +60,35 @@ public class WebServerVerticle extends AbstractVerticle {
 	private Handler<RoutingContext> handle(String address) {
 		return context -> {
 			log.debug("handle:" + address);
-			String digitalAsset = context.request().getParam("digitalAsset");
-			String blockchain = context.request().getParam("blockchain");
+			JsonObject req=new JsonObject();
+
+			String id = context.request().getParam("id");
+			if(id!=null) req.put("id", id);
+
 			HttpServerResponse response = context.response();
 			try {
-				JsonObject body;
+				
 				try {
-					body = context.getBodyAsJson();
+					if(!context.getBodyAsString().equals("")){
+						req.put("requestBody",context.getBodyAsJson());
+					}
 				} catch (DecodeException e) {
 					log.warn("Body not json. Message:" + e.getMessage());
-					body = new JsonObject();
+					sendError(400,"body not JSON", response);
+					return;
 				}
+				
+				
 
-				eb.send(address, body, message -> {
+				eb.send(address, req, message -> {
 			    	 if(message.succeeded()){
 			    		 JsonObject status = (JsonObject) message.result().body();
+			    		 if("error".equals(status.getString("status"))){
+			    			 response.setStatusCode(500);
+			    		 }
+			    		 if("fail".equals(status.getString("status"))){
+			    			 response.setStatusCode(400);
+			    		 }
 			    		 response.putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
 			    		 .end(status.encode());
 			    	 }else{

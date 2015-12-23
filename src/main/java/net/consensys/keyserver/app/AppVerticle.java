@@ -9,6 +9,7 @@ import io.vertx.core.json.JsonObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.consensys.keyserver.api.KeystoreVerticle;
 import net.consensys.keyserver.api.StatusVerticle;
 
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ public class AppVerticle extends AbstractVerticle {
 	static {
 		deploy.add(WebServerVerticle.class);
 		deploy.add(StatusVerticle.class);
+		deploy.add(KeystoreVerticle.class);
 		deploy.add(MongoVerticle.class);
 	}
 	
