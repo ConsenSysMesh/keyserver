@@ -4,7 +4,7 @@
   "repository": "https://github.com/ajunge/keyserver",
   "keywords": ["lightwallet", "ethereum", "vertx"],
   "addons": [
-    "mongolab:shared-single-small"
+    "mongolab"
   ],
   "buildpacks": [
     {
