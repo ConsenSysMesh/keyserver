@@ -93,7 +93,7 @@ combineJs {
     dest = file("${buildDir}/resources/main/webroot/app.js")
 }
 
-#tasks.shadowJar.dependsOn tasks.combineJs
+//tasks.shadowJar.dependsOn tasks.combineJs
 
 def cssSrcDir = 'src/main/resources/webroot/css'
 String[] cssFiles = ["${cssSrcDir}/bootstrap.min.css",
