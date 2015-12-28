@@ -1,0 +1,108 @@
+buildscript {
+    repositories { 
+	jcenter() 
+	mavenCentral()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.2'
+        classpath 'com.eriwen:gradle-js-plugin:1.12.1'
+        classpath 'com.eriwen:gradle-css-plugin:1.11.1'
+        classpath 'net.eikehirsch.react:gradle-react-plugin:0.3.1'
+        classpath 'de.undercouch:gradle-download-task:2.0.0'
+	classpath 'net.saliman:gradle-cobertura-plugin:2.2.8'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'eclipse'
+apply plugin: 'js'
+apply plugin: 'css'
+apply plugin: 'net.eikehirsch.react'
+apply plugin: 'com.moowork.node'
+apply plugin: 'de.undercouch.download'
+apply plugin: 'net.saliman.cobertura'
+
+version = 'v0.0.1'
+
+
+if (!JavaVersion.current().java8Compatible) {
+    throw new IllegalStateException('''A Haiku:
+                                      |  This needs Java 8,
+                                      |  You are using something else,
+                                      |  Refresh. Try again.'''.stripMargin())
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url = 'http://oss.sonatype.org/content/repositories/snapshots/'
+    }
+}
+
+dependencies {
+    compile 'io.vertx:vertx-core:3.2.0'
+    compile 'io.vertx:vertx-unit:3.2.0'
+    compile 'io.vertx:vertx-web:3.2.0'
+    compile 'io.vertx:vertx-mongo-client:3.2.0'
+    compile 'org.slf4j:slf4j-api:1.7.12'
+    compile 'junit:junit:4.12'
+    runtime 'ch.qos.logback:logback-classic:1.1.3'
+} 
+
+shadowJar {
+    classifier = 'fat'
+    manifest {
+        attributes 'Main-Class': 'net.consensys.keyserver.app.AppVerticle'
+    }
+    mergeServiceFiles {
+        include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
+    }
+}
+
+
+def jsSrcDir = 'src/main/resources/webroot/js'
+def jsCnvDir = "${buildDir}/resources/main/webroot/js"
+
+def jsxSrcDir = 'src/main/resources/webroot/jsx'
+
+jsx {
+  sourcesDir = jsxSrcDir
+  destDir = jsCnvDir
+}
+
+tasks.combineJs.dependsOn tasks.jsx, npmInstall
+
+String[] jsFiles = ["${jsSrcDir}/lib/jquery-1.11.3.min.js",
+                    "${jsSrcDir}/lib/bootstrap.min.js",
+                    "${jsSrcDir}/lib/accounting.min.js",
+					"./node_modules/react/dist/react.min.js", 
+					"./node_modules/react-bootstrap/dist/react-bootstrap.min.js", 
+                    "./node_modules/react-router/umd/ReactRouter.min.js",
+                    "./node_modules/jwt-decode/build/jwt-decode.min.js",
+                    "${jsCnvDir}/NavBar.js",
+                    "${jsCnvDir}/FrontPage.js",
+                    "${jsCnvDir}/DashboardApp.js",
+                    "${jsCnvDir}/Main.js",
+                    ]
+
+
+combineJs {
+    source = jsFiles
+    dest = file("${buildDir}/resources/main/webroot/app.js")
+}
+
+//tasks.shadowJar.dependsOn tasks.combineJs
+
+def cssSrcDir = 'src/main/resources/webroot/css'
+String[] cssFiles = ["${cssSrcDir}/bootstrap.min.css",
+                    "${cssSrcDir}/font-awesome.min.css",
+                    "${cssSrcDir}/app.css",
+					]
+combineCss {
+    source = cssFiles
+    dest = file("${buildDir}/resources/main/webroot/app.css")
+}
+tasks.shadowJar.dependsOn tasks.combineCss
+

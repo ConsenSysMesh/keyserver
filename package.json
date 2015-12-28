@@ -1,0 +1,29 @@
+{
+  "name": "keyserver",
+  "namespace": "net.consensys",
+  "version": "0.0.1",
+  "description": "LightWallet KeyServer",
+  "dependencies": {
+    "react": "^0.14.3",
+    "react-bootstrap": "^0.28.1",
+    "react-dom": "^0.14.3",
+    "history": "1.13.1",
+    "react-router": "latest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.org/consensys/keyserver.git"
+  },
+  "homepage": "https://github.org/consensys/keyserver.git",
+  "bugs": {
+    "url": "https://github.org/consensys/keyserver/issues"
+  },
+  "author": "ConsenSys",
+  "authors": [
+    {
+      "name": "Andres Junge",
+      "email": "andres.junge@consensys.net",
+      "url": "https://github.com/ajunge"
+    }
+  ]
+}
