@@ -40,7 +40,27 @@ public class MongoVerticle extends AbstractVerticle {
 				log.debug("collection keystores not created");
 				log.debug(res.cause().getMessage());
 			}
+			
+			JsonObject command = new JsonObject()
+		      .put("createIndexes", "keystores")
+		      .put("indexes",new JsonArray().add(new JsonObject()
+		      	.put("key",new JsonObject().put("identifier",1))
+		      	.put("name","unique_identifier")
+		      	.put("unique","true")
+		    ));
+
+			client.runCommand("createIndexes", command, resIndex -> {
+				if(resIndex.succeeded()){
+					log.debug("createIndex keystores created");
+				}else{
+					log.debug("createIndex keystores not created");
+					log.debug(res.cause().getMessage());
+				}
+			 });
 		});
+		
+		
+		
 		log.debug("MongoVerticle Iniciado.");
 	}
 
@@ -74,8 +94,12 @@ public class MongoVerticle extends AbstractVerticle {
 						log.debug("Documento guardad con exito. ID:" + id);
 						event.reply(new JsonObject().put("_id", id));
 					} else {
-						log.debug("Error al guardar el documento.", mongoEvt.cause());
-						event.fail(500, mongoEvt.cause().getMessage());
+						log.debug("Error al guardar el documento:"+ mongoEvt.cause().getMessage());
+						if(mongoEvt.cause().getMessage().startsWith("E11000")){
+							event.fail(11000, mongoEvt.cause().getMessage());
+						}else{
+							event.fail(500, mongoEvt.cause().getMessage());
+						}
 					}
 				});
 			} else if (action.trim().equals("find")) {

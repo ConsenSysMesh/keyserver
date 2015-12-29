@@ -44,10 +44,10 @@ public class WebServerVerticle extends AbstractVerticle {
 		router.get("/status").handler(handle("app.status"));
 		
 		//API v0
-		router.get("/api/v0/keystore/:id").handler(handle("keystore.get"));
-		router.post("/api/v0/keystore/:id").handler(handle("keystore.post"));
-		router.put("/api/v0/keystore/:id").handler(handle("keystore.put"));
-		router.delete("/api/v0/keystore/:id").handler(handle("keystore.delete"));
+		router.get("/api/v0/keystore/:identifier").handler(handle("keystore.get"));
+		router.post("/api/v0/keystore/:identifier").handler(handle("keystore.post"));
+		router.put("/api/v0/keystore/:identifier").handler(handle("keystore.put"));
+		router.delete("/api/v0/keystore/:identifier").handler(handle("keystore.delete"));
 		
 		//Static
 		router.route("/*").handler(StaticHandler.create());
@@ -74,8 +74,8 @@ public class WebServerVerticle extends AbstractVerticle {
 			log.debug("handle:" + address);
 			JsonObject req=new JsonObject();
 
-			String id = context.request().getParam("id");
-			if(id!=null) req.put("id", id);
+			String identifier = context.request().getParam("identifier");
+			if(identifier!=null) req.put("identifier", identifier);
 			
 			String token = context.request().getParam("token");
 			if(token!=null) req.put("token", token);

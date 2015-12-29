@@ -25,12 +25,12 @@ public class KeystoreVerticle extends AbstractVerticle {
 	}
 	
 	private void doGet(Message<JsonObject> event) {
-		String id = event.body().getString("id");
+		String identifier = event.body().getString("identifier");
 		String providedToken = event.body().getString("token");
 		JsonObject mongo = new JsonObject()
 				.put("action", "find")
 				.put("collection", "keystores")
-				.put("matcher", new JsonObject().put("id", id));
+				.put("matcher", new JsonObject().put("identifier", identifier));
 		
 		eb.send("vertx.mongopersistor", mongo,  mongoEvent -> {
 				if (mongoEvent.succeeded()) {
@@ -45,7 +45,7 @@ public class KeystoreVerticle extends AbstractVerticle {
 							replyFail(event,new JsonObject().put("message","bad token"));
 						}
 					}else{
-						replyFail(event,new JsonObject().put("message","id:"+id+" not found"));
+						replyFail(event,new JsonObject().put("message","identifier:"+identifier+" not found"));
 					}
 				} else {
 					log.error("error reading from mongo", mongoEvent.cause());
@@ -69,8 +69,12 @@ public class KeystoreVerticle extends AbstractVerticle {
 				if (mongoEvent.succeeded()) {
 					replySuccess(event,(JsonObject)mongoEvent.result().body());
 				} else {
-					log.error("error storing in mongo", mongoEvent.cause());
-					replyError(event,"error storing in mongo:" + mongoEvent.cause().getMessage());
+					if(mongoEvent.cause().getMessage().startsWith("E11000")){
+						replyFail(event,(new JsonObject()).put("message",event.body().getString("identifier")+" already used"));
+					}else{
+						log.error("error storing in mongo", mongoEvent.cause());
+						replyError(event,"error storing in mongo:" + mongoEvent.cause().getMessage());
+					}
 				}
 			}
 		);
@@ -88,7 +92,7 @@ public class KeystoreVerticle extends AbstractVerticle {
 	
 	private JsonObject makeKeyStoreDocument(Message<JsonObject> event){
 		return new JsonObject()
-			.put("id", event.body().getString("id"))
+			.put("identifier", event.body().getString("identifier"))
 			.put("keystore", event.body().getJsonObject("requestBody").getJsonObject("keystore"))
 			.put("token", event.body().getJsonObject("requestBody").getString("token"));
 	}
