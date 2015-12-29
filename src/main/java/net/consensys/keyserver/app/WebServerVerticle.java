@@ -5,6 +5,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.DecodeException;
 import io.vertx.core.json.JsonObject;
@@ -38,6 +39,7 @@ public class WebServerVerticle extends AbstractVerticle {
 		);
 		router.route().handler(CookieHandler.create());
 		router.route().handler(BodyHandler.create());
+		router.route().handler(extractToken());
 		
 		router.get("/status").handler(handle("app.status"));
 		
@@ -55,6 +57,16 @@ public class WebServerVerticle extends AbstractVerticle {
 		log.info("Listening on port:"+portStr);
 	}
 	
+	private Handler<RoutingContext> extractToken() {
+		return routingContext -> {
+			HttpServerRequest request = routingContext.request();
+			String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+			if(authHeader!=null && authHeader.startsWith("Bearer ")){
+				request.params().add("token", authHeader.replace("Bearer ", ""));
+			}
+			routingContext.next();
+		};	
+	} 
 	
 	
 	private Handler<RoutingContext> handle(String address) {
@@ -64,6 +76,9 @@ public class WebServerVerticle extends AbstractVerticle {
 
 			String id = context.request().getParam("id");
 			if(id!=null) req.put("id", id);
+			
+			String token = context.request().getParam("token");
+			if(token!=null) req.put("token", token);
 
 			HttpServerResponse response = context.response();
 			try {

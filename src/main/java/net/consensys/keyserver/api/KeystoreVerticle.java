@@ -1,9 +1,6 @@
 package net.consensys.keyserver.api;
 
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
-import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonArray;
@@ -29,6 +26,7 @@ public class KeystoreVerticle extends AbstractVerticle {
 	
 	private void doGet(Message<JsonObject> event) {
 		String id = event.body().getString("id");
+		String providedToken = event.body().getString("token");
 		JsonObject mongo = new JsonObject()
 				.put("action", "find")
 				.put("collection", "keystores")
@@ -40,7 +38,12 @@ public class KeystoreVerticle extends AbstractVerticle {
 					JsonArray results = mongoResult.getJsonArray("results");
 					if (results.size() > 0 ) {
 						JsonObject first = results.getJsonObject(0);
-						replySuccess(event,first.getJsonObject("keystore"));
+						String token = first.getString("token");
+						if(token.equals(providedToken)){
+	 						replySuccess(event,first.getJsonObject("keystore"));
+						}else{
+							replyFail(event,new JsonObject().put("message","bad token"));
+						}
 					}else{
 						replyFail(event,new JsonObject().put("message","id:"+id+" not found"));
 					}
@@ -86,7 +89,8 @@ public class KeystoreVerticle extends AbstractVerticle {
 	private JsonObject makeKeyStoreDocument(Message<JsonObject> event){
 		return new JsonObject()
 			.put("id", event.body().getString("id"))
-			.put("keystore", event.body().getJsonObject("requestBody"));
+			.put("keystore", event.body().getJsonObject("requestBody").getJsonObject("keystore"))
+			.put("token", event.body().getJsonObject("requestBody").getString("token"));
 	}
 	
 	private void replySuccess(Message<JsonObject> event, JsonObject data) {
