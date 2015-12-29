@@ -75,16 +75,14 @@ jsx {
 tasks.combineJs.dependsOn tasks.jsx, npmInstall
 
 String[] jsFiles = ["${jsSrcDir}/lib/jquery-1.11.3.min.js",
-                    "${jsSrcDir}/lib/bootstrap.min.js",
-                    "${jsSrcDir}/lib/accounting.min.js",
-					"./node_modules/react/dist/react.min.js", 
-					"./node_modules/react-bootstrap/dist/react-bootstrap.min.js", 
-                    "./node_modules/react-router/umd/ReactRouter.min.js",
-                    "./node_modules/jwt-decode/build/jwt-decode.min.js",
+                    "./node_modules/react/dist/react.js",
+				    "./node_modules/react-dom/dist/react-dom.js",
+				    "./node_modules/react-router/umd/ReactRouter.js",
+				    "./node_modules/react-bootstrap/dist/react-bootstrap.js",
+				    "./node_modules/hooked-web3-provider/build/hooked-web3-provider.js",
+				    "./node_modules/eth-lightwallet/dist/lightwallet.min.js",
                     "${jsCnvDir}/NavBar.js",
-                    "${jsCnvDir}/FrontPage.js",
-                    "${jsCnvDir}/DashboardApp.js",
-                    "${jsCnvDir}/Main.js",
+                    "${jsCnvDir}/App.js",
                     ]
 
 
@@ -93,7 +91,7 @@ combineJs {
     dest = file("${buildDir}/resources/main/webroot/app.js")
 }
 
-//tasks.shadowJar.dependsOn tasks.combineJs
+tasks.shadowJar.dependsOn tasks.combineJs
 
 def cssSrcDir = 'src/main/resources/webroot/css'
 String[] cssFiles = ["${cssSrcDir}/bootstrap.min.css",

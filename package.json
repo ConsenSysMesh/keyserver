@@ -7,8 +7,9 @@
     "react": "^0.14.3",
     "react-bootstrap": "^0.28.1",
     "react-dom": "^0.14.3",
-    "history": "1.13.1",
-    "react-router": "latest"
+    "history": "1.17.0",
+    "react-router": "latest",
+    "eth-lightwallet": "latest"
   },
   "repository": {
     "type": "git",
