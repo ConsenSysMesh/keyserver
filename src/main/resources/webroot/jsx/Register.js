@@ -34,7 +34,8 @@ var Register = React.createClass({
 	
 		KeystoreAPI.keystorePost(keystoreData,
 			function(_postResult){
-				console.log(_postResult);
+				//console.log(_postResult);
+				this.context.history.replaceState(null,'/dashboard');
 			}.bind(this),
 			function(){
 				console.log("error in keystorePost");

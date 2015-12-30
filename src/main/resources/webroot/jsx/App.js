@@ -43,6 +43,7 @@ window.onload = function() {
         <IndexRoute component={FrontPage} />
         <Route path="/register" component={Register} />
         <Route path="/login" component={Login} />
+        <Route path="/dashboard" component={Dashboard} />
       </Route>
     </Router>
     ), document.getElementById('root'))
