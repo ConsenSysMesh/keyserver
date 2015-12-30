@@ -70,7 +70,7 @@ public class KeystoreVerticle extends AbstractVerticle {
 					replySuccess(event,(JsonObject)mongoEvent.result().body());
 				} else {
 					if(mongoEvent.cause().getMessage().startsWith("E11000")){
-						replyFail(event,(new JsonObject()).put("message",event.body().getString("identifier")+" already used"));
+						replyFail(event,(new JsonObject()).put("message","identifier '"+event.body().getString("identifier")+"' already used"));
 					}else{
 						log.error("error storing in mongo", mongoEvent.cause());
 						replyError(event,"error storing in mongo:" + mongoEvent.cause().getMessage());

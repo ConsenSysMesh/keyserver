@@ -18,9 +18,10 @@ var KeystoreAPI = {
 					_success(result.data);
 				}
 			}.bind(this),
-			error: function(){
-				console.log("fallo KeystoreAPI.keystore-post");
-				_error();
+			error: function(jqXHR, textStatus, errorThrown){
+				var ret = jqXHR.statusCode();
+				//console.log(ret);
+				_error(ret.status, ret.responseText);
 			}.bind(this),
 		});
 	},
