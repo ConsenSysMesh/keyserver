@@ -9,7 +9,8 @@
     "react-dom": "^0.14.3",
     "history": "1.17.0",
     "react-router": "latest",
-    "eth-lightwallet": "latest"
+    "eth-lightwallet": "latest",
+    "crypto-js": "latest"
   },
   "repository": {
     "type": "git",

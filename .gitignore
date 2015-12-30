@@ -12,3 +12,4 @@ mods/*
 /build/
 /.vertx/
 /node_modules/
+/bower_components/

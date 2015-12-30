@@ -9,7 +9,7 @@ buildscript {
         classpath 'com.eriwen:gradle-css-plugin:1.11.1'
         classpath 'net.eikehirsch.react:gradle-react-plugin:0.3.1'
         classpath 'de.undercouch:gradle-download-task:2.0.0'
-	classpath 'net.saliman:gradle-cobertura-plugin:2.2.8'
+		classpath 'net.saliman:gradle-cobertura-plugin:2.2.8'
     }
 }
 
@@ -81,6 +81,10 @@ String[] jsFiles = ["${jsSrcDir}/lib/jquery-1.11.3.min.js",
 				    "./node_modules/react-bootstrap/dist/react-bootstrap.js",
 				    "./node_modules/hooked-web3-provider/build/hooked-web3-provider.js",
 				    "./node_modules/eth-lightwallet/dist/lightwallet.min.js",
+                    "${jsSrcDir}/keystore-api.js",
+                    "${jsCnvDir}/Login.js",
+                    "${jsCnvDir}/Register.js",
+                    "${jsCnvDir}/FrontPage.js",
                     "${jsCnvDir}/NavBar.js",
                     "${jsCnvDir}/App.js",
                     ]
