@@ -21,7 +21,7 @@ var Register = React.createClass({
 		var identifier = this.refs.identifier.getValue().trim();
 		var password = this.refs.password.getValue()
 		var ks = new lightwallet.keystore(this.state.secretSeedInput, password)
-		var token = identifier+':'+password; //CryptoJS.SHA3(identifier+':'+password, { outputLength: 256 }).toString();
+		var token = CryptoJS.SHA3(identifier+':'+password, { outputLength: 256 }).toString();
 		
 		var keystoreData={
 			identifier: identifier,
