@@ -20,6 +20,7 @@ window.NavItem = ReactBootstrap.NavItem;
 window.Nav = ReactBootstrap.Nav;
 window.NavDropdown = ReactBootstrap.NavDropdown;
 window.MenuItem = ReactBootstrap.MenuItem;
+window.Well = ReactBootstrap.Well;
 
 var App = React.createClass({
   render: function() {
