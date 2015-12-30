@@ -31,12 +31,12 @@ var Register = React.createClass({
 			keystore: JSON.parse(ks.serialize()),
 			token: token
 		}
-		
 		//console.log(keystoreData);	
 		
 	
 		KeystoreAPI.keystorePost(keystoreData,
 			function(_postResult){
+				this.props.setKeystoreData(keystoreData);
 				this.context.history.replaceState(null,'/dashboard');
 			}.bind(this),
 			function(status,responseText){

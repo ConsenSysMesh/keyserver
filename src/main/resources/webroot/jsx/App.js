@@ -23,12 +23,20 @@ window.MenuItem = ReactBootstrap.MenuItem;
 window.Well = ReactBootstrap.Well;
 
 var App = React.createClass({
+	getInitialState: function() {
+	    return {keystoreData: ''};
+	},
+	
+	setKeystoreData: function(_keystoreData){
+		this.setState({keystoreData: _keystoreData})
+	},
+	
   render: function() {
 	    return (
 	      <div>
-	        <NavBar />
+	        <NavBar keystoreData={this.state.keystoreData} setKeystoreData={this.setKeystoreData} />
 	        <div className="container-fluid">
-	        {this.props.children}
+	        {React.cloneElement(this.props.children, {keystoreData: this.state.keystoreData, setKeystoreData: this.setKeystoreData})}
 	        </div>
 	      </div>
 	    );
