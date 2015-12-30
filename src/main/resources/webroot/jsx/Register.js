@@ -15,7 +15,7 @@ var Register = React.createClass({
 	
 	generateRandomSeed: function(){
 		var randomSeed = lightwallet.keystore.generateRandomSeed();
-		console.log(randomSeed);
+		//console.log(randomSeed);
 		this.setState({secretSeedInput: randomSeed});
 	},
 	
@@ -25,7 +25,7 @@ var Register = React.createClass({
 		var password = this.refs.password.getValue()
 		var ks = new lightwallet.keystore(this.state.secretSeedInput, password)
 		var token = CryptoJS.SHA3(identifier+':'+password, { outputLength: 256 }).toString();
-		console.log(token);
+		//console.log(token);
 		var keystoreData={
 			identifier: identifier,
 			keystore: JSON.parse(ks.serialize()),

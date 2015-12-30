@@ -40,7 +40,7 @@ public class KeystoreVerticle extends AbstractVerticle {
 						JsonObject first = results.getJsonObject(0);
 						String token = first.getString("token");
 						if(token.equals(providedToken)){
-	 						replySuccess(event,first.getJsonObject("keystore"));
+	 						replySuccess(event,first);
 						}else{
 							replyFail(event,new JsonObject().put("message","bad token"));
 						}

@@ -18,7 +18,6 @@ var NavBar = React.createClass({
   
   render: function() {
 	var userOptions;
-	console.log(this.props.keystoreData);
 	if(this.props.keystoreData != ''){
 		userOptions = (
 			<Nav pullRight>
