@@ -115,7 +115,25 @@ public class KeystoreVerticle extends AbstractVerticle {
 	}
 	
 	private void doDelete(Message<JsonObject> event) {
-		replyError(event,"not implemeted yet.");
+		String identifier = event.body().getString("identifier");
+		String providedToken = event.body().getString("token");
+		JsonObject mongo = new JsonObject()
+				.put("action", "removeOne")
+				.put("collection", "keystores")
+				.put("matcher", new JsonObject()
+							.put("identifier", identifier)
+							.put("token", providedToken)
+				);
+		
+		eb.send("vertx.mongopersistor", mongo,  mongoEvent -> {
+				if (mongoEvent.succeeded()) {
+					replySuccess(event,(JsonObject)mongoEvent.result().body());
+				} else {
+					log.error("error removing from mongo", mongoEvent.cause());
+					replyError(event,"error removing from mongo:" + mongoEvent.cause().getMessage());
+				}
+			}
+		);
 	}
 	
 	private JsonObject makeKeyStoreDocument(Message<JsonObject> event){

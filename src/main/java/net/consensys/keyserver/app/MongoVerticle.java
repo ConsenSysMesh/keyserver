@@ -117,10 +117,11 @@ public class MongoVerticle extends AbstractVerticle {
 						event.fail(500, mongoEvt.cause().getMessage());
 					}
 				});
-			} else if (action.trim().equals("remove")) {
+			} else if (action.trim().equals("removeOne")) {
 				JsonObject matcher = body.getJsonObject("matcher");
-				client.remove(collection, matcher, mongoEvt -> {
+				client.removeOne(collection, matcher, mongoEvt -> {
 					if (mongoEvt.succeeded()) {
+						//log.debug(mongoEvt.result()==null);
 						log.debug("Documento eliminado.");
 						event.reply(SUCCESS);
 					} else {

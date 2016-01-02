@@ -36,7 +36,7 @@ var Dashboard = React.createClass({
 				function(status,responseText){
 					var resp=JSON.parse(responseText);
 					this.setState({addressError: resp.data.message});
-					//console.log("error in keystorePost");
+					//console.log("error in keystorePut");
 				}.bind(this)
 			);
 			
@@ -59,6 +59,59 @@ var Dashboard = React.createClass({
 	handleSeedDismiss() {
 	    this.setState({seed: null, seedError:null });
 	 },
+	 
+	 changePassword: function(){
+		try{
+			var keystoreData=this.props.keystoreData;
+			var password = this.refs.passwordChange.getValue()
+			var passwordNew = this.refs.passwordChangeNew.getValue()
+			
+			var countAddresses = this.state.ks.getAddresses().length;
+			var secretSeed =this.state.ks.getSeed(password);
+			var ks = new lightwallet.keystore(secretSeed, passwordNew);
+			ks.generateNewAddress(passwordNew,countAddresses);
+			
+			var keystoreData=this.props.keystoreData;
+			keystoreData.keystore =  JSON.parse(ks.serialize());
+			
+			var oldToken=keystoreData.token;
+			keystoreData.token = CryptoJS.SHA3(keystoreData.identifier+':'+passwordNew, { outputLength: 256 }).toString();
+			
+			KeystoreAPI.keystorePut(oldToken,keystoreData,
+				function(_postResult){
+					this.setState({ks: ks, changePasswordError: null});
+				}.bind(this),
+				function(status,responseText){
+					var resp=JSON.parse(responseText);
+					this.setState({changePasswordError: resp.data.message});
+					//console.log("error in keystorePut");
+				}.bind(this)
+			);
+			
+		} catch(e){
+			this.setState({changePasswordError: e.message})
+		}
+	},
+	 
+	 deleteKeystore: function(){
+		try{
+			var keystoreData=this.props.keystoreData;
+			KeystoreAPI.keystoreDelete(keystoreData.identifier,keystoreData.token,
+				function(_postResult){
+					this.props.setKeystoreData('');
+					this.context.history.replaceState(null,'/');
+				}.bind(this),
+				function(status,responseText){
+					var resp=JSON.parse(responseText);
+					this.setState({deleteError: resp.data.message});
+					//console.log("error in keystoreDelete");
+				}.bind(this)
+			);
+			
+		} catch(e){
+			this.setState({deleteError: e.message})
+		}
+	},
 	
   render: function() {
 	  var addresses;
@@ -92,6 +145,17 @@ var Dashboard = React.createClass({
 	  }else if(this.state.seedError != undefined){
 		  secretSeed = ( <Alert bsStyle="danger"><p>{this.state.seedError}</p></Alert>)
 	  }
+
+	  var changePasswordError;
+	  if(this.state.changePasswordError != undefined){
+		  changePasswordError = ( <Alert bsStyle="danger"><p>{this.state.changePasswordError}</p></Alert>)
+	  }
+
+	  
+	  var deleteError;
+	  if(this.state.deleteError != undefined){
+		  deleteError = ( <Alert bsStyle="danger"><p>{this.state.deleteError}</p></Alert>)
+	  }
 	  
 		return (
 			<ReactBootstrap.Row>
@@ -106,22 +170,35 @@ var Dashboard = React.createClass({
 				</Panel>
 				
 				<Panel header="Keystore Seed">
-				{secretSeed}
-				<form>
-	          	<Label>Show Keystore Secret Seed</Label>
-	        		<Input type="password" ref='passwordSeed' placeholder="password" buttonAfter={getSeedButton}/>
-	          	</form>
-			</Panel>
+					{secretSeed}
+					<form>
+		          	<Label>Show Keystore Secret Seed</Label>
+		        		<Input type="password" ref='passwordSeed' placeholder="password" buttonAfter={getSeedButton}/>
+		          	</form>
+	        	</Panel>
 			</ReactBootstrap.Col>
 			<ReactBootstrap.Col md={6}>
-				<Well>
-					<h4>Change Password</h4>
-					(not implemented yet)
-				</Well>
-				<Well>
-					<h4>Delete from keyserver</h4>
-					(not implemented yet)
-				</Well>
+				<Panel header="Change password">
+					{changePasswordError}
+					<form>
+		          	<Label>Actual Password</Label>
+		        		<Input type="password" ref='passwordChange' placeholder="password"/>
+		          	<Label>New Password</Label>
+		        		<Input type="password" ref='passwordChangeNew' placeholder="password"/>
+		          	</form>
+					<ButtonToolbar >
+						<Button className="pull-right" bsStyle='primary' onClick={this.changePassword}>Change Password</Button>
+					</ButtonToolbar >
+		    	</Panel>
+				<Panel header="Delete keystore from keyserver">
+					{deleteError}
+					<Well>
+					Delete keystore from server and from browser. Be sure to have backup. This action is irreversible.
+					</Well>
+					<ButtonToolbar >
+						<Button className="pull-right" bsStyle='danger' onClick={this.deleteKeystore}>Delete permanently from keyserver</Button>
+					</ButtonToolbar >
+	        	</Panel>
 			</ReactBootstrap.Col>
 		</ReactBootstrap.Row>
     );
