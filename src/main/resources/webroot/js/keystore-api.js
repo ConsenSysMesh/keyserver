@@ -50,5 +50,57 @@ var KeystoreAPI = {
 			}.bind(this),
 		});
 	},
+	
+	keystorePut: function(_token,_data,_success, _error){
+		var identifier = _data.identifier;
+		var uri=KeystoreAPI.endpoint+"/api/v0/keystore/"+identifier;
+		$.ajax({
+			url:uri,
+			type:"PUT",
+			dataType:"json",
+			data: JSON.stringify(_data),
+			xhrFields: {
+		       withCredentials: true
+		    },
+		    beforeSend: function(xhr) {
+			      xhr.setRequestHeader("Authorization", "Bearer " + _token);
+			},
+			success: function(result) {
+				if (result.status == 'success') {
+					_success(result.data);
+				}
+			}.bind(this),
+			error: function(jqXHR, textStatus, errorThrown){
+				var ret = jqXHR.statusCode();
+				//console.log(ret);
+				_error(ret.status, ret.responseText);
+			}.bind(this),
+		});
+	},
+	
+	keystoreDelete: function(_identifier,_token,_success, _error){
+		var uri=KeystoreAPI.endpoint+"/api/v0/keystore/"+_identifier;
+		$.ajax({
+			url:uri,
+			type:"DELETE",
+			dataType:"json",
+			xhrFields: {
+		       withCredentials: true
+		    },
+		    beforeSend: function(xhr) {
+			      xhr.setRequestHeader("Authorization", "Bearer " + _token);
+			},
+			success: function(result) {
+				if (result.status == 'success') {
+					_success(result.data);
+				}
+			}.bind(this),
+			error: function(jqXHR, textStatus, errorThrown){
+				var ret = jqXHR.statusCode();
+				//console.log(ret);
+				_error(ret.status, ret.responseText);
+			}.bind(this),
+		});
+	},
 
 }

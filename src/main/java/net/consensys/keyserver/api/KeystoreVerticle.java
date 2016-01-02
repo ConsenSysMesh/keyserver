@@ -83,7 +83,35 @@ public class KeystoreVerticle extends AbstractVerticle {
 	
 
 	private void doPut(Message<JsonObject> event) {
-		replyError(event,"not implemeted yet.");
+		String identifier = event.body().getString("identifier");
+		String providedToken = event.body().getString("token");
+		JsonObject mongo = new JsonObject()
+				.put("action", "find")
+				.put("collection", "keystores")
+				.put("matcher", new JsonObject().put("identifier", identifier));
+		
+		eb.send("vertx.mongopersistor", mongo,  mongoEvent -> {
+				if (mongoEvent.succeeded()) {
+					JsonObject mongoResult = (JsonObject)mongoEvent.result().body();
+					JsonArray results = mongoResult.getJsonArray("results");
+					if (results.size() > 0 ) {
+						JsonObject first = results.getJsonObject(0);
+						String token = first.getString("token");
+						if(token.equals(providedToken)){
+							event.body().put("_id", first.getString("_id"));
+							doPost(event);
+						}else{
+							replyFail(event,new JsonObject().put("message","bad token"));
+						}
+					}else{
+						replyFail(event,new JsonObject().put("message","identifier:"+identifier+" not found"));
+					}
+				} else {
+					log.error("error reading from mongo", mongoEvent.cause());
+					replyError(event,"error reading from mongo:" + mongoEvent.cause().getMessage());
+				}
+			}
+		);
 	}
 	
 	private void doDelete(Message<JsonObject> event) {
@@ -91,10 +119,16 @@ public class KeystoreVerticle extends AbstractVerticle {
 	}
 	
 	private JsonObject makeKeyStoreDocument(Message<JsonObject> event){
-		return new JsonObject()
+		JsonObject doc= new JsonObject()
 			.put("identifier", event.body().getString("identifier"))
 			.put("keystore", event.body().getJsonObject("requestBody").getJsonObject("keystore"))
 			.put("token", event.body().getJsonObject("requestBody").getString("token"));
+		
+		if(event.body().containsKey("_id")){
+			doc.put("_id", event.body().getString("_id"));
+		}
+		
+		return doc;
 	}
 	
 	private void replySuccess(Message<JsonObject> event, JsonObject data) {

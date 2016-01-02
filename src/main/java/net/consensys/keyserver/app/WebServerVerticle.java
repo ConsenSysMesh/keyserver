@@ -36,6 +36,8 @@ public class WebServerVerticle extends AbstractVerticle {
 					.allowedMethod(HttpMethod.OPTIONS)
 					.allowedMethod(HttpMethod.GET)
 					.allowedMethod(HttpMethod.POST)
+					.allowedMethod(HttpMethod.PUT)
+					.allowedMethod(HttpMethod.DELETE)
 		);
 		router.route().handler(CookieHandler.create());
 		router.route().handler(BodyHandler.create());

@@ -23,8 +23,23 @@ var Dashboard = React.createClass({
 		try{
 			var ks=this.state.ks;
 			ks.generateNewAddress(password);
-			//TODO: Store ks in keyserver
-			this.setState({ks: ks, addressError: null});
+			
+			var keystoreData=this.props.keystoreData;
+			keystoreData.keystore =  JSON.parse(ks.serialize());
+			//console.log(keystoreData);	
+			
+		
+			KeystoreAPI.keystorePut(keystoreData.token,keystoreData,
+				function(_postResult){
+					this.setState({ks: ks, addressError: null});
+				}.bind(this),
+				function(status,responseText){
+					var resp=JSON.parse(responseText);
+					this.setState({addressError: resp.data.message});
+					//console.log("error in keystorePost");
+				}.bind(this)
+			);
+			
 		} catch(e){
 			this.setState({addressError: e.message})
 		}
