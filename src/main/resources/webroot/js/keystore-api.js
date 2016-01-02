@@ -1,6 +1,6 @@
 var KeystoreAPI = {
 	endpoint: '',
-	//endpoint: "http://localhost:8080",
+	endpoint: "http://localhost:8080",
 	
 	keystorePost: function(_data,_success, _error){
 		var identifier = _data.identifier;

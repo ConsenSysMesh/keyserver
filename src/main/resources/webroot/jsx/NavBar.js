@@ -21,7 +21,7 @@ var NavBar = React.createClass({
 	if(this.props.keystoreData != ''){
 		userOptions = (
 			<Nav pullRight>
-				<NavItem eventKey={1} onClick={this.logout} >Logout</NavItem>
+				<NavItem eventKey={1} onClick={this.logout} >Logout {this.props.keystoreData.identifier}</NavItem>
 			</Nav>
 		);
 	}else{

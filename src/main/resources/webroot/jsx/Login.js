@@ -22,9 +22,9 @@ var Login = React.createClass({
 	
 		KeystoreAPI.keystoreGet(identifier,token,
 			function(_postResult){
-				console.log(_postResult);
-			    var keystoreData = _postResult.data;
-				this.props.setKeystoreData(keystoreData);
+				//console.log(_postResult);
+			    var keystoreData = _postResult;
+			    this.props.setKeystoreData(keystoreData);
 				this.context.history.replaceState(null,'/dashboard');
 			}.bind(this),
 			function(status,responseText){
