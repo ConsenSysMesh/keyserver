@@ -15,27 +15,27 @@ var Login = React.createClass({
 	recover: function(){
 		var identifier = this.refs.identifier.getValue().trim();
 		var password = this.refs.password.getValue()
-		var token = CryptoJS.SHA3(identifier+':'+password, { outputLength: 256 }).toString();
-		//console.log(token);
-		//console.log(identifier);	
+		scrypt(password, identifier, 1, 1, 256, 1000, function(_token) {
+			//console.log(_token);
+			//console.log(identifier);	
 		
-	
-		KeystoreAPI.keystoreGet(identifier,token,
-			function(_postResult){
-				//console.log(_postResult);
-			    var keystoreData = _postResult;
-			    this.props.setKeystoreData(keystoreData);
-				this.context.history.replaceState(null,'/dashboard');
-			}.bind(this),
-			function(status,responseText){
-				var resp=JSON.parse(responseText);
-				if(resp.status=='fail'){
-					//console.log("Error:"+resp.data.message);
-					this.setState({error: resp.data.message});				
-				}
-				//console.log("error in keystorePost");
-			}.bind(this)
-		);
+			KeystoreAPI.keystoreGet(identifier,_token,
+				function(_postResult){
+					//console.log(_postResult);
+				    var keystoreData = _postResult;
+				    this.props.setKeystoreData(keystoreData);
+					this.context.history.replaceState(null,'/dashboard');
+				}.bind(this),
+				function(status,responseText){
+					var resp=JSON.parse(responseText);
+					if(resp.status=='fail'){
+						//console.log("Error:"+resp.data.message);
+						this.setState({error: resp.data.message});				
+					}
+					//console.log("error in keystorePost");
+				}.bind(this)
+			);
+		}.bind(this), "hex");
 	},
 	
   render: function() {

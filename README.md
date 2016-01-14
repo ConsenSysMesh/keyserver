@@ -50,4 +50,4 @@ curl -i  -H 'Authorization: Bearer 055e97f1736b6041640451d90cc209c1' \
 
 
 ##Roadmap
-- Add UI
+- Implement rate-limiting to prevent brute-force attacks

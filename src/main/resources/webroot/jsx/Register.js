@@ -23,31 +23,37 @@ var Register = React.createClass({
 	registerOnServer: function(){
 		var identifier = this.refs.identifier.getValue().trim();
 		var password = this.refs.password.getValue()
-		var ks = new lightwallet.keystore(this.state.secretSeedInput, password)
-		var token = CryptoJS.SHA3(identifier+':'+password, { outputLength: 256 }).toString();
-		//console.log(token);
-		var keystoreData={
-			identifier: identifier,
-			keystore: JSON.parse(ks.serialize()),
-			token: token
-		}
-		//console.log(keystoreData);	
+		var ks = new lightwallet.keystore(this.state.secretSeedInput, password);
 		
-	
-		KeystoreAPI.keystorePost(keystoreData,
-			function(_postResult){
-				this.props.setKeystoreData(keystoreData);
-				this.context.history.replaceState(null,'/dashboard');
-			}.bind(this),
-			function(status,responseText){
-				var resp=JSON.parse(responseText);
-				if(resp.status=='fail'){
-					//console.log("Error:"+resp.data.message);
-					this.setState({error: resp.data.message});				
-				}
-				//console.log("error in keystorePost");
-			}.bind(this)
-		);
+		scrypt(password, identifier, 1, 1, 256, 1000, function(_token) {
+			console.log(_token);
+			//console.log(identifier);	
+		
+			var keystoreData={
+				identifier: identifier,
+				keystore: JSON.parse(ks.serialize()),
+				token: _token
+			}
+			//console.log(keystoreData);	
+			
+		
+			KeystoreAPI.keystorePost(keystoreData,
+				function(_postResult){
+					this.props.setKeystoreData(keystoreData);
+					this.context.history.replaceState(null,'/dashboard');
+				}.bind(this),
+				function(status,responseText){
+					var resp=JSON.parse(responseText);
+					if(resp.status=='fail'){
+						//console.log("Error:"+resp.data.message);
+						this.setState({error: resp.data.message});				
+					}
+					//console.log("error in keystorePost");
+				}.bind(this)
+			);
+		}.bind(this), "hex");
+		
+		
 		
 	},
 
@@ -107,7 +113,7 @@ var Register = React.createClass({
 					<p><strong>Identifier</strong>: Identifier of the keystore on the server. Must be unique in the server. 
 					Suggested: username, email or uuid.  </p>
 					<p><strong>Password</strong>: Password to protect the keystore. This password is used protect the keystore on the client side 
-					and also to generate the token to protect the keystore on the server. Token is generated: SHA3(identifier:password)  </p>
+					and also to generate the token to protect the keystore on the server. Token is generated: scrypt(password, identifier, 1, 1, 256, 1000)  </p>
 					<p><strong>Secret Seed</strong>: Secret seed of the keystore. If you have a previous generated seed, you can paste it here. 
 					If not you can click on "Generate Random Secret Seed" to generate a new one.</p>
 					<p>Click on "Register" to register your keystore on the server</p>

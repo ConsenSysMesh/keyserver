@@ -75,18 +75,23 @@ var Dashboard = React.createClass({
 			keystoreData.keystore =  JSON.parse(ks.serialize());
 			
 			var oldToken=keystoreData.token;
-			keystoreData.token = CryptoJS.SHA3(keystoreData.identifier+':'+passwordNew, { outputLength: 256 }).toString();
+			scrypt(passwordNew, keystoreData.identifier, 1, 1, 256, 1000, function(_token) {
+				keystoreData.token = _token;
+				//console.log("token:"+_token);
+				
+				KeystoreAPI.keystorePut(oldToken,keystoreData,
+					function(_postResult){
+						this.setState({ks: ks, changePasswordError: null});
+					}.bind(this),
+					function(status,responseText){
+						var resp=JSON.parse(responseText);
+						this.setState({changePasswordError: resp.data.message});
+						//console.log("error in keystorePut");
+					}.bind(this)
+				);
+				
+			}.bind(this), "hex");
 			
-			KeystoreAPI.keystorePut(oldToken,keystoreData,
-				function(_postResult){
-					this.setState({ks: ks, changePasswordError: null});
-				}.bind(this),
-				function(status,responseText){
-					var resp=JSON.parse(responseText);
-					this.setState({changePasswordError: resp.data.message});
-					//console.log("error in keystorePut");
-				}.bind(this)
-			);
 			
 		} catch(e){
 			this.setState({changePasswordError: e.message})

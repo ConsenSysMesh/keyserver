@@ -10,7 +10,7 @@
     "history": "1.17.0",
     "react-router": "latest",
     "eth-lightwallet": "latest",
-    "crypto-js": "latest"
+    "scrypt-async": "latest"
   },
   "repository": {
     "type": "git",
